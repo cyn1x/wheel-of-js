@@ -7,30 +7,15 @@ const screen = {
     centerY: 0,
 }
 
-const rectangle = {
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-    quadrants: 4,
-
-    // Data pertaining to each quadrant
-    quadWidth: 0,
-    quadHeight: 0
-}
-
 const circle = {
     x: 0,
     y: 0,
     r: 0,
-    d: 0,
-    c: 0,
-    slices: 0,
+    angle: 0,
+    arcs: 0,
 
-    // Data pertaining to each slice in the circle
-    theta: 0,
-    area: 0,
-    arcLength: 0,
+    // Data pertaining to each arc in the circle
+    arcTheta: 0
 }
 
 let color_data = ['#6699ff', '#ff6666', '#ffcc66', '#99ff99'];
@@ -45,12 +30,8 @@ function start() {
     circle.x = canvas.width / 2;
     circle.y = canvas.width / 2;
     circle.r = canvas.width / 2;
-    circle.d = 2 * circle.r;
-    circle.c = 2 * Math.PI * circle.r;
-    circle.slices = label_data.length;
-    circle.theta = 360 / circle.slices;
-    circle.area = (circle.sliceTheta / 360) * Math.PI * Math.pow(circle.r, 2);
-    circle.arcLength = (circle.sliceTheta / 360) * 2 * Math.PI * circle.r;
+    circle.arcs = label_data.length;
+    circle.arcTheta = 360 / circle.arcs;
     
     // Start game loop
     screen.intervalHandle;
@@ -58,25 +39,27 @@ function start() {
 
 function update() {
     draw();
+    // circle.angle += 1;
+    // circle.angle %= 360;
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // drawQuad();
     drawCircle();
     drawButton();
     // clearInterval(screen.intervalHandle);
 }
 
-function drawQuad() {
-    for (let i = 0; i < 4; i++) {
-    }
-}
-
 function drawCircle() {
-    for (let i = 0; i < circle.slices; i++) {
-        const start = radians(circle.theta * i);
-        const end = radians((circle.theta * i) + circle.theta);
+    for (let i = 0; i < circle.arcs; i++) {
+        const index = i;
+        const start = radians(circle.arcTheta * i);
+        const end = radians((circle.arcTheta * i) + circle.arcTheta);
+        
+        ctx.save();
+        ctx.translate(circle.x, circle.y);
+        ctx.rotate(radians(circle.angle));
+        ctx.translate(-circle.x, -circle.y);
 
         ctx.beginPath();
         ctx.moveTo(screen.centerX, screen.centerY);
@@ -88,15 +71,26 @@ function drawCircle() {
         ctx.strokeStyle = "#fff";
         ctx.fill();
         ctx.stroke();
+
+        ctx.restore();
+        drawLabels(index);
     }
 }
 
 function drawButton() {
 }
 
-function drawText() {
+function drawLabels(index) {
+    ctx.save();
+    ctx.translate(circle.x, circle.y);
+    ctx.rotate(radians(circle.angle + circle.arcTheta / 2 + circle.arcTheta * index));
+    ctx.font = "1rem sans-serif";
+    ctx.fillText(label_data[index], screen.centerX / 4, 5);
+    ctx.translate(-circle.x, -circle.y);
+    ctx.restore();
 }
 
-radians = (degrees) => degrees * Math.PI / 180
+radians = (deg) => deg * Math.PI / 180;
+degrees = (rad) => rad * 180 / Math.PI;
 
 start();
