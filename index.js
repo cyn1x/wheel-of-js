@@ -13,24 +13,39 @@ const circle = {
     r: 0,
     angle: 0,
     arcs: 0,
+    angularVelocity: 0,
+    angularAcceleration: 0.25,
+    damping: 1,
 
     // Data pertaining to each arc in the circle
-    arcTheta: 0
+    arcTheta: 0,
+
+    // State information
+    spin: false,
+    lock: false,
+    slow: false
 }
 
 const color_data = ['#6699ff', '#ff6666', '#ffcc66', '#99ff99'];
 const label_data = ['Test 1', 'Test 2', 'Test 3', 'Test 4'];
 
-let spin = false;
-
 document.getElementById('spin-btn').addEventListener(
     "click", function() { 
-        spin = true;
+        circle.spin = true;
+
         setTimeout(() => {
-            spin = false;
+            circle.damping = 0.995;
+        }, 5000);
+
+        setTimeout(() => {
+            circle.damping = 0.98;
+        }, 8000);
+        
+        setTimeout(() => {
+            circle.spin = false;
             clearInterval(screen.intervalHandle);
             calculate();
-        }, 5000);
+        }, 12500);
     }
 );
 
@@ -49,7 +64,7 @@ function start() {
 }
 
 function update() {
-    if (spin) {
+    if (circle.spin) {
         spinWheel();
     }
     draw();
@@ -102,8 +117,18 @@ function drawLabels(index) {
 }
 
 function spinWheel() {
-    circle.angle += 1;
+    circle.angle += circle.angularVelocity;
     circle.angle %= 360;
+
+    if (!circle.lock) {
+        
+        circle.angularVelocity += circle.angularAcceleration;
+        if (circle.angularVelocity >= 25) {
+            circle.lock = true;
+        }
+    } else {
+        circle.angularVelocity *= circle.damping;
+    }
 }
 
 /**
@@ -120,8 +145,8 @@ function calculate() {
         const angle = (360 + offset - circle.angle) % 360;
 
         if (angle > lowerBound && angle < upperBound) {
-            console.log(label_data[i]);
-            console.log("landAngle: ", landAngle);
+            console.log("selected:   ", label_data[i]);
+            console.log("angle:      ", angle);
             console.log("lowerBound: ", lowerBound);
             console.log("upperBound: ", upperBound);
         }
