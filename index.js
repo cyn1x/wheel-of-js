@@ -27,7 +27,7 @@ const circle = {
 }
 
 const color_data = ['#6699ff', '#ff6666', '#ffcc66', '#99ff99'];
-const label_data = ['Test 1', 'Test 2', 'Test 3', 'Test 4'];
+const label_data = ['Label A', 'Label B', 'Label C', 'Label D'];
 
 document.getElementById('spin-btn').addEventListener(
     "click", function() { 
@@ -58,6 +58,9 @@ function start() {
     circle.r = canvas.width / 2;
     circle.arcs = label_data.length;
     circle.arcTheta = 360 / circle.arcs;
+
+    shuffle(label_data);
+    shuffle(color_data);
 
     // Start game loop
     screen.intervalHandle;
@@ -153,6 +156,15 @@ function calculate() {
 
     }
 
+}
+
+function shuffle(array) { 
+    for (let i = array.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [array[i], array[j]] = [array[j], array[i]]; 
+    }
+
+    return array; 
 }
 
 radians = (deg) => deg * Math.PI / 180;
