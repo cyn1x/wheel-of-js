@@ -18,10 +18,21 @@ const circle = {
     arcTheta: 0
 }
 
-let color_data = ['#6699ff', '#ff6666', '#ffcc66', '#99ff99'];
-let label_data = ['Test 1', 'Test 2', 'Test 3', 'Test 4'];
+const color_data = ['#6699ff', '#ff6666', '#ffcc66', '#99ff99'];
+const label_data = ['Test 1', 'Test 2', 'Test 3', 'Test 4'];
 
-document.getElementById('spin-btn').addEventListener("click", undefined);
+let spin = false;
+
+document.getElementById('spin-btn').addEventListener(
+    "click", function() { 
+        spin = true;
+        setTimeout(() => {
+            spin = false;
+            clearInterval(screen.intervalHandle);
+            calculate();
+        }, 5000);
+    }
+);
 
 function start() {
     screen.centerX = canvas.width / 2;
@@ -32,22 +43,22 @@ function start() {
     circle.r = canvas.width / 2;
     circle.arcs = label_data.length;
     circle.arcTheta = 360 / circle.arcs;
-    
+
     // Start game loop
     screen.intervalHandle;
 }
 
 function update() {
+    if (spin) {
+        spinWheel();
+    }
     draw();
-    // circle.angle += 1;
-    // circle.angle %= 360;
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawCircle();
     drawButton();
-    // clearInterval(screen.intervalHandle);
 }
 
 function drawCircle() {
@@ -55,7 +66,7 @@ function drawCircle() {
         const index = i;
         const start = radians(circle.arcTheta * i);
         const end = radians((circle.arcTheta * i) + circle.arcTheta);
-        
+
         ctx.save();
         ctx.translate(circle.x, circle.y);
         ctx.rotate(radians(circle.angle));
@@ -88,6 +99,35 @@ function drawLabels(index) {
     ctx.fillText(label_data[index], screen.centerX / 4, 5);
     ctx.translate(-circle.x, -circle.y);
     ctx.restore();
+}
+
+function spinWheel() {
+    circle.angle += 1;
+    circle.angle %= 360;
+}
+
+/**
+ * Determines which arc is selected by checking whether a point on the unit circle
+ * is bounded by the lower and upper bounds of an arc in degrees.
+ */
+function calculate() {
+    const offset = 45; // Override default offset of 0 to move the selection point.
+
+    for (let i = 0; i < circle.arcs; i++) {
+        const lowerBound = ((circle.arcTheta * i));
+        const upperBound = ((circle.arcTheta * (i + 1)));
+
+        const angle = (360 + offset - circle.angle) % 360;
+
+        if (angle > lowerBound && angle < upperBound) {
+            console.log(label_data[i]);
+            console.log("landAngle: ", landAngle);
+            console.log("lowerBound: ", lowerBound);
+            console.log("upperBound: ", upperBound);
+        }
+
+    }
+
 }
 
 radians = (deg) => deg * Math.PI / 180;
