@@ -1,8 +1,12 @@
+<div align="center">
+
 # Wheel of JS
 
 A demonstration of a basic spinning wheel in JavaScript.
 
-![Preview](https://imgur.com/a/mLvRP5q)
+![Preview](https://i.imgur.com/BVG71Ao.gif)
+
+</div>
 
 # License
 
